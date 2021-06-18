@@ -16,11 +16,13 @@ class Tile:
         self.hiddenImage = hiddenImage
 
     def remove(self):
-        if self.type != TileType.FLAGGED:
+        if self.type == TileType.FILLED:
             self.type = TileType.REVEALED
+            return 1
+        return 0
 
     def flag(self, count: int, cap: int):
-        if self.type != TileType.FLAGGED and count < cap:
+        if self.type == TileType.FILLED and count < cap:
             self.type = TileType.FLAGGED
             self.topImage = FLAG_IMAGE
             return count + 1

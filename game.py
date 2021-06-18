@@ -1,33 +1,14 @@
 import pygame
 
 from board import Board
-from variables import Difficulty, TileType
-
-# Constants
-TITLE = "Python Minesweeper"  # Title of the window
-
-SQUARE_SIZE = 40  # Size of each grid square
-
-BACKGROUND_COLOR = (255, 255, 255)  # White
-
-# Difficulty-Specific Constants
-GRID_SIZE = {
-    Difficulty.EASY: (8, 8),
-    Difficulty.INTERMEDIATE: (16, 16),
-    Difficulty.HARD: (16, 30)
-}
-
-MINE_COUNT = {
-    Difficulty.EASY: 10,
-    Difficulty.INTERMEDIATE: 40,
-    Difficulty.HARD: 99
-}
+from variables import Difficulty, TileType, GRID_SIZE, MINE_COUNT, SQUARE_SIZE, TITLE
 
 
 class MinesweeperGame:
     board: Board
     difficulty: Difficulty
     window: pygame.Surface
+    gameOver: bool
 
     def __init__(self, difficulty: Difficulty):
         pygame.init()
@@ -39,6 +20,8 @@ class MinesweeperGame:
         self.board = Board(GRID_SIZE[difficulty], MINE_COUNT[difficulty])
         self.difficulty = difficulty
 
+        self.gameOver = False
+
     def handle_event(self, event: pygame.event.Event):
         if event.type == pygame.QUIT:
             exit()
@@ -48,10 +31,15 @@ class MinesweeperGame:
                 if event.button == pygame.BUTTON_LEFT:
                     column = event.pos[1] // SQUARE_SIZE
                     row = event.pos[0] // SQUARE_SIZE
-                    self.board.remove_tile(row, column)
+
+                    self.gameOver = self.board.remove_tile(row, column) or \
+                                    (self.board.revealCount == (GRID_SIZE[self.difficulty][0] *
+                                                                GRID_SIZE[self.difficulty][1]) - self.board.mineCount
+                                     and self.board.flagCount == self.board.mineCount)
                 elif event.button == pygame.BUTTON_RIGHT:
                     column = event.pos[1] // SQUARE_SIZE
                     row = event.pos[0] // SQUARE_SIZE
+
                     self.board.flag_tile(row, column)
 
     def render_grid(self):
@@ -71,7 +59,7 @@ def main():
     pygame.display.set_caption(TITLE)
     pygame.display.flip()
 
-    while True:
+    while not game.gameOver:
         for event in pygame.event.get():
             game.handle_event(event)
         game.render_grid()
