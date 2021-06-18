@@ -1,7 +1,7 @@
 import pygame
 
 from board import Board
-from variables import Difficulty, TileType, GRID_SIZE, MINE_COUNT, SQUARE_SIZE, TITLE
+from variables import Difficulty, TileType, GRID_SIZE, MINE_COUNT, SQUARE_SIZE, TITLE, STRING_DIFFICULTIES
 
 
 class MinesweeperGame:
@@ -9,11 +9,14 @@ class MinesweeperGame:
     difficulty: Difficulty
     window: pygame.Surface
     gameOver: bool
+    tileSize: int
 
     def __init__(self, difficulty: Difficulty):
         pygame.init()
 
-        SCREEN_SIZE = (SQUARE_SIZE * GRID_SIZE[difficulty][0], SQUARE_SIZE * GRID_SIZE[difficulty][1])
+        self.tileSize = SQUARE_SIZE[difficulty]
+
+        SCREEN_SIZE = (self.tileSize * GRID_SIZE[difficulty][0], self.tileSize * GRID_SIZE[difficulty][1])
 
         self.window = pygame.display.set_mode(SCREEN_SIZE)
 
@@ -26,19 +29,19 @@ class MinesweeperGame:
         if event.type == pygame.QUIT:
             exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if 0 <= event.pos[0] < SQUARE_SIZE * GRID_SIZE[self.difficulty][0] \
-                    and 0 <= event.pos[1] < SQUARE_SIZE * GRID_SIZE[self.difficulty][1]:
+            if 0 <= event.pos[0] < self.tileSize * GRID_SIZE[self.difficulty][0] \
+                    and 0 <= event.pos[1] < self.tileSize * GRID_SIZE[self.difficulty][1]:
                 if event.button == pygame.BUTTON_LEFT:
-                    column = event.pos[1] // SQUARE_SIZE
-                    row = event.pos[0] // SQUARE_SIZE
+                    column = event.pos[1] // self.tileSize
+                    row = event.pos[0] // self.tileSize
 
                     self.gameOver = self.board.remove_tile(row, column) or \
                                     (self.board.revealCount == (GRID_SIZE[self.difficulty][0] *
                                                                 GRID_SIZE[self.difficulty][1]) - self.board.mineCount
                                      and self.board.flagCount == self.board.mineCount)
                 elif event.button == pygame.BUTTON_RIGHT:
-                    column = event.pos[1] // SQUARE_SIZE
-                    row = event.pos[0] // SQUARE_SIZE
+                    column = event.pos[1] // self.tileSize
+                    row = event.pos[0] // self.tileSize
 
                     self.board.flag_tile(row, column)
 
@@ -46,15 +49,15 @@ class MinesweeperGame:
         for row in range(len(self.board.grid)):
             for col in range(len(self.board.grid[0])):
                 if self.board.grid[row][col].type == TileType.REVEALED:
-                    self.window.blit(self.board.grid[row][col].hiddenImage,
-                                     pygame.Rect(row * SQUARE_SIZE, col * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+                    self.window.blit(pygame.transform.scale(self.board.grid[row][col].hiddenImage, (self.tileSize, self.tileSize)),
+                                     pygame.Rect(row * self.tileSize, col * self.tileSize, self.tileSize, self.tileSize))
                 else:
-                    self.window.blit(self.board.grid[row][col].topImage,
-                                     pygame.Rect(row * SQUARE_SIZE, col * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+                    self.window.blit(pygame.transform.scale(self.board.grid[row][col].topImage, (self.tileSize, self.tileSize)),
+                                     pygame.Rect(row * self.tileSize, col * self.tileSize, self.tileSize, self.tileSize))
 
 
 def main():
-    game = MinesweeperGame(Difficulty.INTERMEDIATE)
+    game = MinesweeperGame(STRING_DIFFICULTIES[input("Difficulty (EASY, INTERMEDIATE, HARD): ").upper()])
 
     pygame.display.set_caption(TITLE)
     pygame.display.flip()

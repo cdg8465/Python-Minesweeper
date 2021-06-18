@@ -17,8 +17,9 @@ class Board:
         self.grid = initialize_grid(gridSize, mineCount)
 
     def remove_tile(self, row: int, column: int):
-        self.revealCount += self.grid[row][column].remove()
-        return self.grid[row][column].value == MINE_VALUE
+        removeNum = self.grid[row][column].remove()
+        self.revealCount += removeNum
+        return removeNum == 1 and self.grid[row][column].value == MINE_VALUE
 
     def flag_tile(self, row: int, column: int):
         self.flagCount = self.grid[row][column].flag(self.flagCount, self.mineCount)

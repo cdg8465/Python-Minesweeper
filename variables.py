@@ -18,8 +18,6 @@ class Difficulty(Enum):
 # # Basics
 TITLE = "Python Minesweeper"  # Title of the window
 
-SQUARE_SIZE = 40  # Size of each grid square
-
 BACKGROUND_COLOR = (255, 255, 255)  # White
 
 # # Hidden Mine Value
@@ -39,6 +37,12 @@ EIGHT_IMAGE = pygame.image.load(os.path.join("resources", "eight.png"))
 MINE_IMAGE = pygame.image.load(os.path.join("resources", "mine.png"))
 
 # Difficulty-Specific Constants
+STRING_DIFFICULTIES = {
+    "EASY": Difficulty.EASY,
+    "INTERMEDIATE": Difficulty.INTERMEDIATE,
+    "HARD": Difficulty.HARD
+}
+
 GRID_SIZE = {
     Difficulty.EASY: (8, 8),
     Difficulty.INTERMEDIATE: (16, 16),
@@ -49,6 +53,12 @@ MINE_COUNT = {
     Difficulty.EASY: 10,
     Difficulty.INTERMEDIATE: 40,
     Difficulty.HARD: 99
+}
+
+SQUARE_SIZE = {
+    Difficulty.EASY: 40,
+    Difficulty.INTERMEDIATE: 40,
+    Difficulty.HARD: 30
 }
 
 IMAGE_VALUES = {
